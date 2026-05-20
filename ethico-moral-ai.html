@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artificial Intelligence and the Question on Ethico-Moral Algorithmic Representation｜人工智慧與倫理—道德演算法表徵問題</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #100d09;
+  --ink-light: #1f1a13;
+  --ink-muted: #4f473c;
+  --paper: #f7f3ec;
+  --paper-warm: #f1eadf;
+  --paper-dark: #ddd8cc;
+  --accent: #7d3d25;
+  --accent-light: #c47a56;
+  --accent-pale: #f0e0d4;
+  --rule: #b9b1a0;
+  --highlight: #e8d5a3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: linear-gradient(180deg, #f7f3ec 0%, #efe8dc 100%);
+  color: var(--ink);
+  font-family: "Noto Serif TC", "EB Garamond", Georgia, serif;
+  line-height: 1.9;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(139,74,47,0.04), transparent 30%),
+    radial-gradient(circle at 80% 90%, rgba(196,122,86,0.035), transparent 35%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  z-index: 1000;
+  transition: width 0.1s linear;
+}
+
+.side-nav {
+  position: fixed;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.side-nav a {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rule);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.side-nav a.active,
+.side-nav a:hover {
+  background: var(--accent);
+  transform: scale(1.4);
+}
+
+.side-nav a::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  color: var(--ink-light);
+  opacity: 0;
+  transition: opacity 0.2s;
+  letter-spacing: 0.05em;
+}
+
+.side-nav:hover a::after { opacity: 1; }
+
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 38%, rgba(139,74,47,0.055) 0%, transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,0.35), rgba(245,240,232,0.15));
+}
+
+.cover-ornament {
+  font-size: 13px;
+  letter-spacing: 0.35em;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 1s 0.2s forwards;
+}
+
+.cover-line {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 1rem;
+}
+
+.cover h1 {
+  font-family: "Noto Serif TC", Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  max-width: 800px;
+  opacity: 0;
+  animation: fadeUp 1s 0.5s forwards;
+  margin-bottom: 1.5rem;
+}
+
+
+
+.cover-author {
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  opacity: 0;
+  animation: fadeUp 1s 0.9s forwards;
+  margin-top: -2rem;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.03em;
+}
+
+.cover-subtitle {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-style: italic;
+  color: var(--ink-light);
+  max-width: 760px;
+  opacity: 0;
+  animation: fadeUp 1s 0.8s forwards;
+  margin-bottom: 3rem;
+}
+
+.cover-meta {
+  display: flex;
+  gap: 3rem;
+  opacity: 0;
+  animation: fadeUp 1s 1s forwards;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.meta-item {
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+}
+
+.meta-item span {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+
+
+.meta-item a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+}
+
+.meta-item a:hover { color: var(--accent); }
+
+.scroll-hint {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: fadeUp 1s 1.9s forwards;
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.scroll-hint::before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: var(--rule);
+  margin: 0 auto 0.8rem;
+  animation: lineDown 2s 2s infinite;
+}
+
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.section {
+  padding: 6rem 3rem;
+  margin: 3rem 0;
+  border-top: 1px solid var(--rule);
+  background: rgba(250, 247, 241, 0.94);
+  backdrop-filter: blur(6px);
+  border-radius: 22px;
+  box-shadow:
+    0 20px 60px rgba(70, 50, 30, 0.06),
+    inset 0 0 0 1px rgba(255,255,255,0.55);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-header {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.section-num {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 80px;
+  font-weight: 400;
+  color: var(--accent-pale);
+  line-height: 1;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  z-index: -1;
+  user-select: none;
+}
+
+.section-tag {
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.section-en {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-light);
+  margin-top: 0.3rem;
+  display: block;
+}
+
+.body-text p {
+  margin-bottom: 1.6rem;
+  color: var(--ink-light);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.body-text p:last-child { margin-bottom: 0; }
+
+.term {
+  font-style: italic;
+  color: var(--accent);
+}
+
+mark {
+  background: var(--highlight);
+  color: var(--ink);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+.pull-quote {
+  margin: 3rem -1rem;
+  padding: 2.5rem 3rem;
+  background: rgba(241, 234, 223, 0.95);
+  border-left: 4px solid var(--accent);
+  position: relative;
+}
+
+.pull-quote::before {
+  content: "\201C";
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 120px;
+  color: var(--accent-pale);
+  position: absolute;
+  top: -20px;
+  left: 16px;
+  line-height: 1;
+}
+
+.pull-quote p {
+  font-family: "Noto Serif TC", Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--ink);
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+.subsection {
+  margin: 3rem 0;
+}
+
+.subsection-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1.2rem;
+  padding-left: 1.2rem;
+  border-left: 3px solid var(--accent);
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  margin: 2.5rem 0;
+  border: 1px solid var(--rule);
+}
+
+.concept-card {
+  background: rgba(250, 247, 241, 0.96);
+  padding: 1.5rem;
+  transition: background 0.2s;
+}
+
+.concept-card:hover { background: var(--accent-pale); }
+
+.concept-card .cn {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.concept-card .en {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.arg-flow {
+  margin: 2.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.arg-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--paper-dark);
+}
+
+.arg-step:last-child { border-bottom: none; }
+
+.arg-num {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 2rem;
+  color: var(--accent-pale);
+  font-weight: 400;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 2.5rem;
+  text-align: center;
+}
+
+.arg-content strong {
+  display: block;
+  font-size: 14px;
+  color: var(--accent);
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.arg-content p {
+  font-size: 15px;
+  color: var(--ink-light);
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+.critique-box {
+  background: linear-gradient(135deg, rgba(241,234,223,0.95), rgba(221,216,204,0.85));
+  border: 1px solid var(--rule);
+  padding: 2rem 2.5rem;
+  margin: 2.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.critique-box::after {
+  content: "✦";
+  position: absolute;
+  bottom: -10px;
+  right: 20px;
+  font-size: 100px;
+  color: rgba(139,74,47,0.04);
+  line-height: 1;
+}
+
+.critique-box .label {
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+
+.critique-box p {
+  font-size: 15px;
+  color: var(--ink-light);
+  line-height: 1.85;
+  font-weight: 500;
+}
+
+.ornamental-divider {
+  text-align: center;
+  color: var(--accent-light);
+  font-size: 18px;
+  letter-spacing: 0.5em;
+  margin: 2rem 0;
+  opacity: 0.6;
+}
+
+.toc {
+  background: rgba(250, 247, 241, 0.9);
+  border: 1px solid var(--paper-dark);
+  padding: 2.5rem 3rem;
+  margin: 4rem 0 0;
+  box-shadow: 0 12px 40px rgba(70, 50, 30, 0.06);
+}
+
+.toc-wrap {
+  opacity: 0;
+  animation: fadeUp 1s 1.45s forwards;
+}
+
+.toc-title {
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 1.5rem;
+}
+
+.toc ol {
+  list-style: none;
+  counter-reset: toc-counter;
+}
+
+.toc ol li {
+  counter-increment: toc-counter;
+  display: grid;
+  grid-template-columns: 14% 38% 38%;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.toc ol li:last-child { border-bottom: none; }
+
+.toc ol li::before {
+  content: counter(toc-counter, upper-roman);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 13px;
+  color: var(--accent);
+  min-width: 1.5rem;
+  grid-column: 1;
+  text-align: center;
+}
+
+.toc ol li a {
+  color: var(--ink-light);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  grid-column: 2;
+  text-align: center;
+}
+
+.toc ol li a:hover { color: var(--accent); }
+
+.toc ol li .toc-en {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-light);
+  grid-column: 3;
+  text-align: center;
+}
+
+.conclusion-highlight {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2.5rem 3rem;
+  margin: 2.5rem -1rem;
+}
+
+.conclusion-highlight p {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  opacity: 0.9;
+  color: var(--paper);
+}
+
+.conclusion-highlight em {
+  color: var(--accent-light);
+  font-style: normal;
+  font-weight: 700;
+}
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--ink-muted);
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lineDown {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@media (max-width: 768px) {
+  .side-nav { display: none; }
+  .section {
+    padding: 4rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 16px;
+  }
+  .pull-quote { margin: 2rem 0; padding: 2rem; }
+  .concept-grid { grid-template-columns: repeat(2, 1fr); }
+  .conclusion-highlight { margin: 2rem 0; padding: 2rem; }
+  .cover h1 { font-size: 1.9rem; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="progress-bar"></div>
+
+<nav class="side-nav" id="sideNav">
+  <a href="#cover-title" data-label="目次" title="目次" class="active"></a>
+  <a href="#sec-problematic" data-label="問題意識" title="問題意識"></a>
+  <a href="#sec-thesis" data-label="論點" title="論點"></a>
+  <a href="#sec-argumentation" data-label="論證過程" title="論證過程"></a>
+  <a href="#sec-critique" data-label="評論" title="評論"></a>
+  <a href="#sec-conclusion" data-label="結論" title="結論"></a>
+</nav>
+
+<section class="cover">
+  <div class="cover-ornament">
+    <span class="cover-line"></span>
+    哲學與人工智慧
+    <span class="cover-line"></span>
+  </div>
+  <h1 id="cover-title">人工智慧與<br/>倫理—道德演算法表徵問題</h1>
+  <p class="cover-subtitle">Artificial Intelligence and the Question on<br>Ethico-Moral Algorithmic Representation</p>
+  <p class="cover-author">Justin Nnaemeka Onyeukaziri</p>
+  <div class="cover-meta">
+     <div class="meta-item">原文連結 Source<span><a href="https://philpapers.org/archive/ONYAIA-5.pdf" target="_blank" rel="noopener">PhilPapers PDF</a></span></div>
+    <div class="meta-item">學號 Student ID<span>414346028</span></div>
+    <div class="meta-item">報告者 Presenter<span>董書妤</span></div>
+  </div>
+
+  <div class="container toc-wrap" style="width:100%;margin-top:4rem;">
+    <div class="toc" id="toc">
+      <div class="toc-title">目次 — Contents</div>
+      <ol>
+        <li><a href="#sec-problematic">問題意識</a><span class="toc-en">Problematic</span></li>
+        <li><a href="#sec-thesis">論點</a><span class="toc-en">Thesis</span></li>
+        <li><a href="#sec-argumentation">論證過程</a><span class="toc-en">Argumentation</span></li>
+        <li><a href="#sec-critique">評論</a><span class="toc-en">Critique</span></li>
+        <li><a href="#sec-conclusion">結論</a><span class="toc-en">Conclusion</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="scroll-hint">向下閱讀</div>
+</section>
+
+<main class="container">
+
+  <section class="section" id="sec-problematic">
+    <div class="section-header">
+      <div class="section-num">一</div>
+      <span class="section-tag">Section I</span>
+      <h2 class="section-title">問題意識</h2>
+      <span class="section-en">Problematic</span>
+    </div>
+
+    <div class="body-text">
+      <p>當代<span class="term">人工智慧系統（AI systems）</span>的設計與發展日趨成熟，使<span class="term">人工智慧哲學（philosophy of AI）</span>與<span class="term">認知科學（cognitive science）</span>中關於「智能」本質與邊界的討論變得更加重要。作者在前作中已論證，AI 系統<mark>不具備自由能動性（free agency）</mark>與<mark>自主性（autonomy）</mark>，因此無法承擔道德責任（moral responsibility）。然而，這一主張仍預設了一個更根本、尚未被充分檢視的知識論前提：我們是否真正理解道德知識（moral knowledge）在人類認知系統中如何被<span class="term">表徵（represented）</span>與<span class="term">處理（processed）</span>？</p>
+
+      <p>在討論 AI 是否能擁有道德判斷之前，必須先理解人類本身如何知道什麼是善、什麼是惡，以及人類如何進行道德判斷。若我們連人類的道德知識如何形成、表徵與運作都無法說清楚，那麼要進一步討論 AI 是否能自動化道德知識，便會變得十分困難。</p>
+
+      <div class="pull-quote">
+        <p>本文並不是單純從技術角度討論 AI 能不能做出「看似正確」的倫理判斷，而是從更根本的哲學問題出發：人類的倫理道德知識究竟是什麼？它在人類心智中如何形成、表徵與運作？這種運作是否具有可形式化（formalized）、可計算化（computationalized）與可自動化（automatized）的性質？如果道德知識可以被理解為某種認知運作，那麼它是否能被轉換為人工智慧系統中的演算法表徵（algorithmic representation）？ </p>
+      </div>
+
+      <p>這個問題之所以困難，在於人類的道德知識未必只是抽象的<span class="term">理性信念（rational belief）</span>或規則推理。作者關注的是，道德知識可能同時涉及<mark>欲望（desire）</mark>、<mark>痛苦（pain）</mark>、<mark>快樂（pleasure）</mark>、身體經驗（embodied experience）、自由能動性（free agency）與責任（responsibility）等因素。</p>
+
+      <div class="concept-grid">
+        <div class="concept-card"><div class="cn">欲望</div><div class="en">Desire</div></div>
+        <div class="concept-card"><div class="cn">痛苦</div><div class="en">Pain</div></div>
+        <div class="concept-card"><div class="cn">快樂</div><div class="en">Pleasure</div></div>
+        <div class="concept-card"><div class="cn">具身經驗</div><div class="en">Embodied Experience</div></div>
+        <div class="concept-card"><div class="cn">自由能動性</div><div class="en">Free Agency</div></div>
+        <div class="concept-card"><div class="cn">責任</div><div class="en">Responsibility</div></div>
+      </div>
+
+      <p>若道德判斷只是形式化的規則運算，AI 或許可以透過演算法加以模擬；但如果道德知識必須建立在人類的具身經驗、情感感受、自由選擇與責任承擔之上，AI 是否能真正擁有人類意義上的道德理解與道德運作，便成為本文所要追問的核心問題。</p>
+
+      <p>綜合而言，本文的問題意識可以整理為：<strong>人工智慧系統是否能夠將人類的倫理道德知識進行<span class="term">演算法表徵（algorithmic representation）</span>，並進一步將其自動化？</strong>或者，人類的道德知識因為涉及欲望、快樂、痛苦、具身經驗與自由能動性，而具有 AI 無法完全自動化的獨特性？這也是作者將討論焦點放在<mark>倫理道德演算法表徵（ethico-moral algorithmic representation）</mark>上，而不只是討論 AI 是否能「做出合乎倫理的選擇」的原因。</p>
+    </div>
+  </section>
+
+  <section class="section" id="sec-thesis">
+    <div class="section-header">
+      <div class="section-num">二</div>
+      <span class="section-tag">Section II</span>
+      <h2 class="section-title">論點</h2>
+      <span class="section-en">Thesis</span>
+    </div>
+
+    <div class="body-text">
+      <p>本文的核心論點是：雖然人類的<span class="term">倫理道德知識（ethico-moral knowledge）</span>在理論上似乎可以被表徵、計算與自動化，但若進一步考量道德認知中<mark>理性（reason）</mark>與<mark>欲望（desire）</mark>的內在關係，以及<mark>自由能動性（free agency）</mark>的形上學本質，便會發現人類的道德能力無法真正被人工智慧系統（AI systems）自動化。</p>
+
+      <div class="pull-quote">
+        <p>AI 即使能辨識道德語言、套用倫理規則，或產生看似合乎倫理的判斷結果，也不等於它擁有人類意義上的道德知識、道德經驗或道德責任。</p>
+      </div>
+
+      <p>作者並不是否認 AI 能夠處理倫理相關資訊，也不是否認 AI 可以被設計成遵守特定倫理規則。本文真正要指出的是：AI 即使能辨識道德語言、套用倫理規則，或產生看似合乎倫理的判斷結果，也不等於它擁有人類意義上的<span class="term">道德知識（moral knowledge）</span>、<span class="term">道德經驗（moral experience）</span>或<span class="term">道德責任（moral responsibility）</span>。</p>
+
+      <p>更具體地說，作者認為人類道德知識的特殊性在於：它不是純粹的<span class="term">理性信念（pure rational belief）</span>，也不能被化約為單純的符號操作、規則推理或資訊處理。人類的道德判斷同時涉及欲望（desire）、快樂（pleasure）、痛苦（pain）、激情（passion）、身體經驗（embodied experience）、個體處境（situated experience）與自我意識經驗（self-conscious experience）。因此，人類的<span class="term">倫理道德運作（ethico-moral operation）</span>具有<mark>自成一類的（sui generis）</mark>性質。</p>
+
+      <div class="critique-box">
+        <div class="label">核心主張</div>
+        <p>人工智慧研究中的<span class="term">表徵主義（representationalism）</span>雖然試圖將心智活動理解為可被符號、規則或資訊表徵處理的過程，但作者認為，這種理解無法完整捕捉人類作為處境性的（situated）、具身性的（embodied）與動態性的（dynamic）存在者所具有的道德經驗。AI 或許能模擬或執行某些倫理規則，卻無法真正經歷欲望、痛苦、快樂、自由選擇與責任承擔。</p>
+      </div>
+
+      <p>因此，雖然人類的倫理道德能力似乎可以被轉換為某種演算法表徵，但由於人類道德知識本身具有<mark>處境化（situated）</mark>、<mark>具身化（embodied）</mark>與<mark>動態性（dynamic）</mark>的特徵，並且涉及自由意志、自由能動性、自主性與責任，故 AI 系統無法真正自動化人類的倫理道德運作（ethico-moral operation）。</p>
+    </div>
+  </section>
+
+  <section class="section" id="sec-argumentation">
+    <div class="section-header">
+      <div class="section-num">三</div>
+      <span class="section-tag">Section III</span>
+      <h2 class="section-title">論證過程</h2>
+      <span class="section-en">Argumentation</span>
+    </div>
+
+    <div class="body-text">
+      <p>本文的論證重點，在於說明人工智慧（Artificial Intelligence, AI）即使能進行資訊處理、規則運算與問題解決，也不等於能真正承擔或自動化人類的倫理—道德能力。作者的討論並不是從 AI 技術效能出發，而是先追問：人類的<span class="term">道德知識（moral knowledge）</span>究竟是什麼類型的知識？它是否能被轉換為<span class="term">演算法表徵（algorithmic representation）</span>，並進一步被計算化（computationalization）與自動化（automation）？</p>
+
+      <div class="arg-flow">
+        <div class="arg-step">
+          <div class="arg-num">一</div>
+          <div class="arg-content">
+            <strong>人類道德知識的哲學基礎</strong>
+            <p>回溯西方哲學傳統，說明倫理—道德問題涉及形上學與認識論兩個層面。</p>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="arg-num">二</div>
+          <div class="arg-content">
+            <strong>AI 可以解決問題，但道德表徵不只是資訊編碼</strong>
+            <p>檢視 AI 問題解決系統，探討道德知識是否可被轉換為資訊與信念的表徵。</p>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="arg-num">三</div>
+          <div class="arg-content">
+            <strong>道德自動化的化約困境</strong>
+            <p>指出人類倫理—道德運作不能被完全化約為信念、規則或符號操作。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">（一）人類道德知識的哲學基礎</h3>
+        <p>作者首先回到西方哲學傳統，目的在於說明：倫理—道德問題不只是行為規則問題，而是涉及「善」的本質與人如何認識善的問題。換言之，道德知識並不是單純告訴人們「應該做什麼」或「不應該做什麼」而已，它還涉及<span class="term">形上學（metaphysics）</span>與<span class="term">認識論（epistemology）</span>兩個層面。從形上學角度看，問題是善行的本質（quiddity or essence of the good action）是什麼；從認識論角度看，問題則是人如何知道什麼是善，並選擇去做或不去做善行。</p>
+
+        <p>作者以《遊敘弗倫》（Euthyphro）作為例子，說明道德概念不能只依賴傳統、宗教敘事或個人信念。遊敘弗倫（Euthyphro）認為控告犯錯者就是虔敬（piety），即使對象是自己的父親也一樣；但蘇格拉底（Socrates）關心的不是單一事件中誰對誰錯，而是「虔敬」本身為何。也就是說，蘇格拉底追問的是<mark>虔敬的本質（quiddity of piety）</mark>。在作者看來，這個例子顯示，道德知識若要成為可靠判斷的基礎，就不能停留在故事、信仰或習俗層次，而必須尋求理性上的說明。。</p>
+
+        <div class="pull-quote">
+          <p>蘇格拉底—柏拉圖的做法是：試圖為道德行動尋找較穩定的形上學本質（metaphysical essence）或認知模型（cognitive model），使道德知識能夠被理性地掌握與判斷。這一點也連接到本文的核心問題：如果道德知識需要某種可理解、可判斷的基礎，那麼它是否可能被轉換成人工智慧系統能處理的演算法形式？</p>
+        </div>
+
+        <p>接著，作者透過<span class="term">亞里斯多德（Aristotle）</span>的倫理學進一步說明，道德並不是純粹抽象的知識，而是一種<mark>實踐科學（practical science）</mark>。對亞里斯多德而言，倫理學（ethics）關心的不是人如何單純知道善，而是人如何實際成為道德的、有倫理的或有德行的人。作者特別強調，德行或卓越（virtue or excellence）並不是天生的，而是透過<span class="term">教導（teaching）</span>與<span class="term">習慣（habit）</span>形成。人是透過實踐道德行動，才逐漸成為道德或有德行的人。這一點使作者能夠進一步說明：道德知識雖然不是天生固定在心智中的內容，但也不是單純可以被外部輸入的規則資料，因為它必須在人的實踐生活中形成。 </p>
+
+        <p>此外，亞里斯多德認為，道德上的善與<span class="term">正確理性（right reason）</span>有關，而正確理性表現為在過度（excess）與不足（defect）之間取得<mark>中道（mean）</mark>。然而，作者進一步指出，過度與不足背後涉及<span class="term">快樂與痛苦（pleasure and pain）</span>。人會追求快樂、避免痛苦，而這些自然欲望會影響人的行動方向。因此，快樂與痛苦是<mark>道德計算（moral calculus）</mark>、<mark>道德表徵（moral representation）</mark>與<mark>道德運算（moral computation）</mark>中的重要因素。也就是說，人在進行道德判斷時，不只是抽象地推理「什麼是對的」，還必須在欲望、快樂、痛苦與理性之間進行調節。不過，作者也清楚指出，<span class="term">快樂與痛苦會影響人類行動朝向善或惡，但它們本身並不定義或規定什麼是道德上的善或惡</span>。
+</p>
+      </div>
+
+      <div class="ornamental-divider">✦ ✦ ✦</div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">（二）AI 可以解決問題，但道德表徵不只是資訊編碼</h3>
+        <p>在建立人類道德知識的背景後，作者轉向 AI。作者引用 Allen Newell 與 Herbert A. Simon 的看法，指出 AI 的發展與<span class="term">問題解決系統（problem-solving systems）</span>密切相關。如果智慧（intelligence）被理解為解決問題的能力，那麼 AI 的確可以被視為某種具有智慧表現的系統。然而，作者要追問的是：道德問題是否也能像一般問題一樣，被轉換成 AI 可處理的形式？</p>
+
+        <p>在此，作者指出，<span class="term">道德理解（moral apprehension）</span>、<span class="term">道德辨別（moral discernment）</span>與<span class="term">道德判斷（moral judgment）</span>長期被視為人類智慧的重要特徵。因此，AI 是否能自動化道德能力，不能只從「AI 能解決問題」推導出來。道德問題牽涉的不只是答案產出，而是行動者如何在信念、欲望與責任之間形成判斷。</p>
+
+        <div class="critique-box">
+          <div class="label">理論上的可能路徑</div>
+          <p>如果道德行動主要由<span class="term">信念（beliefs）</span>與<span class="term">欲望（desires）</span>決定，而欲望又可以被理解為某種會產生資訊的心理或生理狀態，那麼資訊理論者（information theorists）可能會主張，道德知識最終可以被轉化為信念與資訊的表徵問題。<mark>若道德信念能被形式化（formalized），便可能被計算化；若能被計算化，則似乎有可能被 AI 系統自動化</mark>。</p>
+        </div>
+
+        <p>這裡的關鍵是，作者並不是直接肯定 AI 能完成道德自動化，而是先呈現這種可能性的前提：如果道德知識只是透過<span class="term">社會文化教育（socio-cultural education）</span>累積而來的<span class="term">道德指令（moral instructions）</span>，那麼它似乎可以被視為一種後天輸入、儲存與處理的內容。如此一來，人類既然能被教育成為道德存在，人工系統是否也可能被道德與倫理地編碼，就成為作者接下來要檢驗的問題。</p>
+      </div>
+
+      <div class="ornamental-divider">✦ ✦ ✦</div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">（三）道德自動化的化約困境</h3>
+        <p>作者對道德自動化的批判，並不是否認 AI 能處理倫理相關資訊，而是指出：人類的倫理—道德運作不能被完全化約為信念、規則或符號操作。這一點是本文論證的關鍵。</p>
+
+        <p>作者認為，在人類心智中，被表徵的不只有道德信念，還有<span class="term">欲望（desire）</span>。道德信念通常不是孤立存在的，而是與人的欲望、快樂、痛苦、情感和具體處境交織在一起。因此，所謂<mark>「純粹的道德信念」（pure moral beliefs）其實很難成立</mark>。若將人類心智理解為某種計算系統，那麼人類的道德計算（moral computation）也仍然是獨特且<mark>自成一類的（sui generis）</mark>，因為它不是單純處理命題或規則，而是處理信念與欲望之間的複雜關係。</p>
+
+        <p>作者再次以《遊敘弗倫》說明這點。遊敘弗倫對虔敬的判斷，不只是宗教信念或法律判斷的問題，也涉及他對父親、家庭與親屬的情感與欲望。這種內在衝突說明，人類道德判斷不是純粹形式推理，而是在具體關係和情感壓力中展開的判斷活動。對作者而言，這正是 AI 難以真正自動化人類道德能力的原因之一。</p>
+
+        <div class="pull-quote">
+          <p>作者認為道德自動化問題取決於兩個因素：<mark>第一是人之為人的本質（nature of the human person）</mark>，<mark>第二是人工智慧與認知科學中表徵主義（representationalism）或符號表徵（symbolic representation）的限制</mark>。人並不是單純處理資訊的抽象系統，而是處境化的（situated）、具身化的（embodied）與動態的（dynamic）存在。<span class="term">人的道德判斷發生在具體身體、生活情境與自我經驗之中，這些特徵使人類的倫理—道德運作無法被簡單化約為抽象符號或資訊計算。</span></p>
+        </div>
+
+        <p>在這個脈絡下，作者引用<span class="term">Karol Wojtyla</span>的觀點，指出成為一個人，就是成為一個道德或倫理的存在者。這一點強化了作者的結論：道德與倫理不只需要理性（reason/rationality），還需要每個具體個人的<mark>自我意識經驗（self-conscious experience）</mark>。由於每個人的道德經驗都不同，道德責任也必須與<span class="term">自主性（autonomy）</span>、<span class="term">自由意志（free will）</span>與<span class="term">自由能動性（free agency）</span>相連，而 AI 系統不具備這些條件。由此可見，AI 的問題不只是「能不能被輸入倫理規則」，而是它是否具備足以支撐道德經驗、道德責任與倫理行動的主體條件。</p>
+
+        <p>作者的結論是否定的：AI 可以處理道德資訊，但<strong>不能真正自動化人類的倫理—道德能力</strong>，也不能成為道德責任的承擔者。因此，作者最後主張，AI 系統不能被要求承擔道德或倫理責任。AI 或許可以處理倫理資訊、模擬某些判斷形式，甚至被設計成遵守特定規則；但它缺乏人類式的自我意識經驗、自由能動性與自主性。也因此，本文的結論不是簡單說 AI 不能處理道德資訊，而是更精確地指出：<b>人類倫理—道德能力的演算法表徵雖然可以被提出為一種可能性，但這種能力不能在 AI 系統中真正被自動化。 </b></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sec-critique">
+    <div class="section-header">
+      <div class="section-num">四</div>
+      <span class="section-tag">Section IV</span>
+      <h2 class="section-title">評論</h2>
+      <span class="section-en">Critique</span>
+    </div>
+
+    <div class="body-text">
+      <p>本文的主要貢獻在於，作者沒有將人工智慧倫理問題簡化為「能否替人工智慧（Artificial Intelligence, AI）輸入倫理規則」，而是進一步追問人類倫理—道德能力是否能被<span class="term">演算法表徵（algorithmic representation）、計算化（computationalization）與自動化（automation）</span>。作者指出，人類道德知識並不是純粹的理性信念（rational belief），而是與欲望（desire）、快樂（pleasure）、痛苦（pain）、具身性（embodiment）、自我意識經驗（self-conscious experience）、自由能動性（free agency）和道德責任（moral responsibility）相關。這使本文能有效提醒我們：AI 即使能輸出看似合乎倫理的答案，也不代表它真正具有<mark>道德意識（moral consciousness）</mark>，更不代表它能承擔道德責任。</p>
+
+      <div class="critique-box">
+        <div class="label">主要批判點</div>
+        <p>然而，本文最值得批判之處在於，作者從「人類道德判斷具有具身性、處境性與欲望結構」推論到「AI 無法真正自動化倫理—道德能力」時，中間仍需要更嚴格的論證。作者透過《遊敘弗倫》（Euthyphro）的例子說明，人類道德判斷不只是信念操作，也包含親情、家庭關係、欲望與內在衝突。然而，指出道德判斷「非常複雜」或「受到欲望影響」，並不等於已經證明它在原則上不能被某種模型部分表徵或模擬。換言之，<span class="term">作者成功說明 AI 不具有人類式的道德經驗，但尚未完全證明 AI 不可能在有限層次上模擬某些<mark>道德推理（moral reasoning）</mark>。</span></p>
+      </div>
+
+      <p>這裡可以引入<span class="term">深度學習（deep learning）</span>作為一個批判角度。原作者的討論較接近符號表徵（symbolic representation）與表徵主義（representationalism）的問題，也就是假設道德知識若能被形式化（formalized），就可能被計算化；若不能形式化，則難以自動化。然而，當代深度學習並不一定依賴人類事先明確寫出的道德規則或符號模型，而可能透過大量資料學習複雜模式。因此，作者若要否定倫理—道德自動化，仍需要說明為什麼這類非明確規則式系統也無法在功能層次上模擬某些道德推理。</p>
+
+      <div class="pull-quote">
+        <p>當然，原作者或許會回應：即使深度學習能模擬道德推理的輸出，它仍缺乏真正的自我意識經驗與具身性，因此其「道德判斷」只是統計模式的映射，而不是真正的道德理解（moral understanding）。這個回應是合理的，也符合作者對 AI 的基本立場。可是，若作者採取這個回應，就需要更清楚說明「真正的道德理解」與「功能上等效的道德推理模擬」之間的區分標準。否則，論文較能證明 AI 不能成為道德責任主體，卻仍不足以完全排除 AI 在有限範圍內模擬或輔助倫理判斷的可能。</p>
+      </div>
+
+      <p>此外，作者對「道德責任」與「道德判斷」的區分仍可更清楚。作者認為 AI 缺乏<span class="term">自由意志（free will）</span>、自由能動性、自主性（autonomy）與自我意識經驗，因此不能承擔道德責任；這個結論相當合理。但不能承擔道德責任，並不必然等於完全不能參與倫理判斷。若所謂倫理判斷是指像人一樣理解善惡、經驗內在衝突並承擔後果，那麼 AI 確實無法做到；但若只是指協助人類辨識偏誤、比較後果、整理利害關係或提醒倫理風險，AI 仍可能具有<mark>有限的倫理輔助功能</mark>。</p>
+
+      <div class="critique-box">
+        <div class="label">建議的概念區分</div>
+        <p>原作者若能區分<span class="term">道德主體（moral agent）</span>與<span class="term">倫理輔助工具（ethical decision-support tool）</span>，論證會更精確。本文最有力的地方，是它清楚指出 AI 不能被視為真正具有道德責任的主體；但它較不足的地方，是沒有充分區分「AI 不能成為道德主體」與「AI 不能在任何意義上模擬或輔助道德判斷」這兩個不同命題。</p>
+      </div>
+
+      <p>前者在本文中相當有說服力，因為道德責任確實需要自我意識、自由意志與自主性；但後者仍需要更多論證，尤其需要面對深度學習等當代 AI 形式。總體而言，本文成功批判了將 AI 視為道德責任主體的想法，但若要更完整地否定倫理—道德自動化，仍需進一步說明為何人類道德經驗不只是目前難以被計算化，而是在原則上無法被任何 AI 模型充分表徵或模擬。</p>
+    </div>
+  </section>
+
+  <section class="section" id="sec-conclusion">
+    <div class="section-header">
+      <div class="section-num">五</div>
+      <span class="section-tag">Section V</span>
+      <h2 class="section-title">結論</h2>
+      <span class="section-en">Conclusion</span>
+    </div>
+
+    <div class="body-text">
+      <p>總結而言，本文以「人工智慧系統是否能進行<span class="term">倫理—道德演算法表徵（ethico-moral algorithmic representation）</span>」為核心問題，探討人類倫理—道德能力是否能被計算化（computationalization）並進一步自動化（automation）。作者的貢獻在於，他沒有只停留在人工智慧（Artificial Intelligence, AI）是否能承擔道德責任的問題，而是進一步追問 AI 是否能表徵並處理道德知識（moral knowledge）。這使 AI 倫理的討論從自由能動性（free agency）與責任（responsibility）問題，推向更深層的<mark>道德知識表徵（representation of moral knowledge）</mark>與<mark>表徵主義（representationalism）</mark>問題。</p>
+
+      <p>作者透過古典倫理學、認知科學與人工智慧表徵問題的討論指出，人類道德知識具有不同於一般知識表徵的獨特性。這種獨特性在於，道德知識並不是純粹的<span class="term">理性信念（rational belief）</span>，而是內在地包含欲望（desire）、快樂（pleasure）、痛苦（pain）與激情（passion）。因此，人類進行道德判斷時，並非只是依照抽象規則進行計算，而是作為<mark>處境化（situated）</mark>、<mark>具身化（embodied）</mark>與<mark>動態（dynamic）</mark>的存在，在具體生命經驗中進行判斷與選擇。</p>
+
+      <div class="conclusion-highlight">
+        <p>由此，作者最終主張：人類倫理—道德能力在 AI 系統中的演算法表徵雖然可以被提出為一種理論可能，但<em>不能在 AI 系統中真正被自動化</em>。因為道德責任（moral responsibility）必須建立在<em>自由意志（free will）</em>、<em>自由能動性</em>、<em>自主性（autonomy）</em>與<em>自我意識經驗（self-conscious experience）</em>之上，而這些條件並不存在於 AI 系統之中。換言之，AI 即使能處理資訊、模擬推理或遵循倫理規則，也不能真正成為具有<em>道德能動性（moral agency）</em>與道德責任的主體。</p>
+      </div>
+
+      <div class="concept-grid" style="margin-top:2.5rem;">
+        <div class="concept-card"><div class="cn">道德主體</div><div class="en">Moral Agent</div></div>
+        <div class="concept-card"><div class="cn">自我意識</div><div class="en">Self-conscious Experience</div></div>
+        <div class="concept-card"><div class="cn">自由意志</div><div class="en">Free Will</div></div>
+        <div class="concept-card"><div class="cn">自主性</div><div class="en">Autonomy</div></div>
+        <div class="concept-card"><div class="cn">道德責任</div><div class="en">Moral Responsibility</div></div>
+        <div class="concept-card"><div class="cn">演算法表徵</div><div class="en">Algorithmic Representation</div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>人工智慧哲學與倫理學研究 &ensp;·&ensp; Philosophy of Artificial Intelligence &amp; Ethics</p>
+  </div>
+</footer>
+
+<script>
+const bar = document.getElementById("progress-bar");
+
+window.addEventListener("scroll", () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  bar.style.width = total > 0 ? (window.scrollY / total * 100) + "%" : "0%";
+});
+
+const sections = document.querySelectorAll(".section");
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add("visible");
+  });
+}, { threshold: 0.08 });
+
+sections.forEach(s => observer.observe(s));
+
+const navLinks = document.querySelectorAll(".side-nav a");
+const sectionEls = [...sections];
+
+// 追蹤是否正在進行點擊跳轉
+let isClicking = false;
+let clickTimeout = null;
+
+function setActiveNav(id) {
+  navLinks.forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+}
+
+function updateSideNavActive() {
+  // 若正在點擊跳轉中，跳過 scroll 觸發的更新
+  if (isClicking) return;
+
+  const scrollY = window.scrollY;
+
+  // 動態取得第一個 section（問題意識）的頂端位置
+  const firstSection = sectionEls[0];
+  const firstSectionTop = firstSection ? firstSection.getBoundingClientRect().top + scrollY : Infinity;
+
+  // 視窗頂端尚未到達「問題意識」section 之前，
+  // 封面、標題、目次區域一律顯示「目次」紅點
+  if (scrollY < firstSectionTop - 80) {
+    setActiveNav("cover-title");
+    return;
+  }
+
+  // 進入各 section 後，依 offsetTop 判斷當前所在區段
+  let current = sectionEls[0].id;
+  sectionEls.forEach(s => {
+    const top = s.getBoundingClientRect().top + scrollY;
+    if (scrollY >= top - 80) {
+      current = s.id;
+    }
+  });
+  setActiveNav(current);
+}
+
+navLinks.forEach(a => {
+  a.addEventListener("click", (e) => {
+    const href = a.getAttribute("href");
+    const id = href.replace("#", "");
+
+    // 立即設定點擊的目標為 active
+    setActiveNav(id);
+
+    // 標記正在跳轉，避免 scroll 事件覆蓋
+    isClicking = true;
+    clearTimeout(clickTimeout);
+
+    // 跳轉完成後（約 1 秒）恢復 scroll 監聽
+    clickTimeout = setTimeout(() => {
+      isClicking = false;
+      updateSideNavActive();
+    }, 1000);
+  });
+});
+
+window.addEventListener("scroll", updateSideNavActive);
+window.addEventListener("load", updateSideNavActive);
+// 確保 DOM 完全渲染後再執行一次（處理字型載入後的高度變化）
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(updateSideNavActive, 300);
+});
+updateSideNavActive();
+</script>
+
+</body>
+</html>
